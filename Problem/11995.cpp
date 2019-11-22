@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <cstdio>
 #include <stack>
@@ -78,15 +79,21 @@ struct AllBag
     }
 };
 
-int main() 
+int main()
 {
-    int operationNum, operation, number;
-    while (scanf("%d", &operationNum) != EOF) 
+    std::ifstream input("input.txt");
+
+    while (!input.eof())
     {
+        int operationNum = 0;
+        input >> operationNum;
         AllBag wholeBag;
         for (int i = 0; i < operationNum; i++)
         {
-            scanf("%d %d", &operation, &number);
+
+            int operation = 0;
+            int number = 0;
+            input >> operation >> number;
 
             switch (operation)
             {
@@ -103,4 +110,6 @@ int main()
         }
         wholeBag.whichBag();
     }
+
+    return 0;
 }
