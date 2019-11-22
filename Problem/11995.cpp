@@ -73,9 +73,19 @@ struct AllBag
                 cout << "not sure" << endl;
         }
         else if (isStack == true)
-            cout << "stack" << endl;
+        {
+            if (!isQueue)
+                cout << "stack" << endl;
+            else
+                cout << "not sure" << endl;
+        }
         else if (isQueue == true)
             cout << "queue" << endl;
+    }
+
+    bool isImposible()
+    {
+        return (!isStack && !isQueue && !isPriorityQueue);
     }
 };
 
@@ -90,7 +100,6 @@ int main()
         AllBag wholeBag;
         for (int i = 0; i < operationNum; i++)
         {
-
             int operation = 0;
             int number = 0;
             input >> operation >> number;
