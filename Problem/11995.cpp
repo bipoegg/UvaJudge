@@ -77,6 +77,11 @@ struct AllBag
         else if (isQueue == true)
             cout << "queue" << endl;
     }
+
+    bool isImposible()
+    {
+        return (!isStack && !isQueue && !isPriorityQueue);
+    }
 };
 
 int main()
@@ -90,7 +95,6 @@ int main()
         AllBag wholeBag;
         for (int i = 0; i < operationNum; i++)
         {
-
             int operation = 0;
             int number = 0;
             input >> operation >> number;
@@ -105,6 +109,10 @@ int main()
                 break;
             default:
                 wholeBag.markWrongBag();
+                break;
+            }
+
+            if (wholeBag.isImposible()) {
                 break;
             }
         }
