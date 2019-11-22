@@ -91,18 +91,15 @@ struct AllBag
 
 int main()
 {
-    std::ifstream input("input.txt");
-
-    while (!input.eof())
+    int operationNum = 0;
+    while (cin >> operationNum)
     {
-        int operationNum = 0;
-        input >> operationNum;
         AllBag wholeBag;
         for (int i = 0; i < operationNum; i++)
         {
             int operation = 0;
             int number = 0;
-            input >> operation >> number;
+            cin >> operation >> number;
 
             switch (operation)
             {
