@@ -35,6 +35,15 @@ struct Point
     int y_;
 };
 
+bool operator<(const Point & lhs, const Point & rhs)
+{
+    if (lhs.x_ == rhs.x_)
+    {
+        return rhs.y_ < lhs.y_;
+    }
+    return lhs.x_ <= rhs.x_;
+}
+
 struct Location
 {
     Location(Point point, Direction direction)
@@ -47,9 +56,9 @@ struct Location
     Direction direction_;
 };
 
-Direction parse_location(char* direction)
+Direction parse_location(char direction)
 {
-    switch (direction[0])
+    switch (direction)
     {
     case 'N':
         return Direction::North;
@@ -81,9 +90,9 @@ char get_direction_char(Direction direction)
     }
 }
 
-Command parse_command(char* command)
+Command parse_command(char command)
 {
-    switch (command[0])
+    switch (command)
     {
     case 'R':
         return Command::Right;
@@ -127,7 +136,7 @@ public:
 private:
     int width_;
     int height_;
-    set<Point> scent_points_;
+    std::set<Point> scent_points_;
 };
 
 class Robot
@@ -146,7 +155,7 @@ public:
         for (auto& command : commands_)
         {
             Location go_back_location = location_;
-            if (!operation(command))
+            if (!success_operation(command))
             {
                 location_ = go_back_location;
                 if (!map_.is_current_point_has_scent(location_.point_))
@@ -200,7 +209,7 @@ private:
         }
     }
 
-    bool operation(Command command)
+    bool success_operation(Command command)
     {
         switch (command)
         {
@@ -210,7 +219,7 @@ private:
             return true;
         case Command::Forward:
             go_foward();
-            return map_.is_out_of_bound(location_.point_);
+            return map_.is_out_of_bound(location_.point_) ? false : true;
         default:
             break;
         }
@@ -218,7 +227,7 @@ private:
         return false;
     }
 
-    Map map_;
+    Map& map_;
     Location location_;
     vector<Command> commands_;
     bool is_failed;
@@ -240,8 +249,8 @@ void robot_walking(istream& in, ostream& out)
 
     int x = 0;
     int y = 0;
-    char direction[1];
-    char command[1];
+    char direction;
+    string command;
 
     istringstream is = read_line(in);
     is >> width >> height;
@@ -260,7 +269,10 @@ void robot_walking(istream& in, ostream& out)
         while (!is.eof())
         {
             is >> command;
-            commands.push_back(parse_command(command));
+            for (int i = 0; i < command.size(); i++)
+            {
+                commands.push_back(parse_command(command[i]));
+            }
         }
 
         // robot execute
@@ -281,12 +293,12 @@ void robot_walking(istream& in, ostream& out)
 
 int main()
 {
-    robot_walking(cin, cout);
+    //robot_walking(cin, cout);
 
-    /*std::ifstream input("input.txt");
+    std::ifstream input("input.txt");
     std::ofstream output("output.txt");
 
-    robot_walking(input, output);*/
+    robot_walking(input, output);
 
     return 0;
 }
