@@ -4,7 +4,6 @@
 #include <cstdio>
 #include <vector>
 #include <set>
-using namespace std;
 
 enum class Direction
 {
@@ -41,7 +40,10 @@ bool operator<(const Point & lhs, const Point & rhs)
     {
         return rhs.y_ < lhs.y_;
     }
-    return lhs.x_ <= rhs.x_;
+    else
+    {
+        lhs.x_ < rhs.x_;
+    }
 }
 
 struct Location
@@ -142,7 +144,7 @@ private:
 class Robot
 {
 public:
-    Robot(Map& map, Location location, vector<Command>& commands)
+    Robot(Map& map, Location location, std::vector<Command>& commands)
         : map_(map)
         , location_(location)
         , commands_(commands)
@@ -232,20 +234,20 @@ private:
 
     Map& map_;
     Location location_;
-    vector<Command> commands_;
+    std::vector<Command> commands_;
     bool is_failed;
 };
 
 
-istringstream read_line(istream& in)
+std::istringstream read_line(std::istream& in)
 {
-    string line;
+    std::string line;
     getline(in, line);
-    istringstream is(line);
+    std::istringstream is(line);
     return is;
 }
 
-void robot_walking(istream& in, ostream& out)
+void robot_walking(std::istream& in, std::ostream& out)
 {
     int width = 0;
     int height = 0;
@@ -253,55 +255,64 @@ void robot_walking(istream& in, ostream& out)
     int x = 0;
     int y = 0;
     char direction;
-    string command;
+    std::string command;
 
-    istringstream is = read_line(in);
-    is >> width >> height;
-
-    Map map(width, height);
-    while (!in.eof())
+    try
     {
-        // get position
-        is = read_line(in);
-        is >> x >> y >> direction;
-        Location location(Point(x, y), parse_location(direction));
 
-        // get command
-        is = read_line(in);
-        vector<Command> commands;
-        while (!is.eof())
+        std::istringstream is = read_line(in);
+        is >> width >> height;
+
+        Map map(width, height);
+        while (!in.eof())
         {
-            is >> command;
-            for (int i = 0; i < command.size(); i++)
+            // get position
+            is = read_line(in);
+            is >> x >> y >> direction;
+            Location location(Point(x, y), parse_location(direction));
+
+            // get command
+            is = read_line(in);
+            std::vector<Command> commands;
+            while (!is.eof())
             {
-                commands.push_back(parse_command(command[i]));
+                is >> command;
+                for (int i = 0; i < command.size(); i++)
+                {
+                    commands.push_back(parse_command(command[i]));
+                }
             }
-        }
 
-        // robot execute
-        Robot robot(map, location, commands);
-        robot.go();
+            // robot execute
+            Robot robot(map, location, commands);
+            robot.go();
 
-        // output
-        Location final_location = robot.get_location();
-        out << final_location.point_.x_ << " " << final_location.point_.y_ << " " << get_direction_char(final_location.direction_);
-        if (robot.is_robot_failed())
-        {
-            out << " LOST";
+            // output
+            Location final_location = robot.get_location();
+            out << final_location.point_.x_ << " " << final_location.point_.y_ << " " << get_direction_char(final_location.direction_);
+            if (robot.is_robot_failed())
+            {
+                out << " LOST";
+            }
+            out << std::endl;
         }
-        out << endl;
     }
+    catch (std::exception& e)
+    {
+        out << e.what();
+    }
+
 }
 
 
 int main()
 {
-    //robot_walking(cin, cout);
+    robot_walking(std::cin, std::cout);
 
-    std::ifstream input("input.txt");
+    /*std::ifstream input("input.txt");
     std::ofstream output("output.txt");
 
-    robot_walking(input, output);
+    robot_walking(input, output);*/
 
     return 0;
 }
