@@ -242,9 +242,21 @@ private:
 std::istringstream read_line(std::istream& in)
 {
     std::string line;
-    getline(in, line);
+    std::getline(in, line);
     std::istringstream is(line);
     return is;
+}
+
+bool is_valid_location_input(const Location& location)
+{
+    if (location.point_.x_ < 0 ||
+        location.point_.y_ < 0 ||
+        location.direction_ == Direction::None)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 void robot_walking(std::istream& in, std::ostream& out)
@@ -252,9 +264,7 @@ void robot_walking(std::istream& in, std::ostream& out)
     int width = 0;
     int height = 0;
 
-    int x = 0;
-    int y = 0;
-    char direction;
+
     std::string command;
 
     try
@@ -267,9 +277,17 @@ void robot_walking(std::istream& in, std::ostream& out)
         while (!in.eof())
         {
             // get position
+            int x = -1;
+            int y = -1;
+            char direction = ' ';
             is = read_line(in);
             is >> x >> y >> direction;
             Location location(Point(x, y), parse_location(direction));
+
+            if (!is_valid_location_input(location))
+            {
+                continue;
+            }
 
             // get command
             is = read_line(in);
