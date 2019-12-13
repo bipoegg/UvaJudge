@@ -154,10 +154,13 @@ public:
     {
         for (auto& command : commands_)
         {
-            Location go_back_location = location_;
-            if (!success_operation(command))
+            Location go_ahead_location = location_;
+            if (success_operation(command, go_ahead_location))
             {
-                location_ = go_back_location;
+                location_ = go_ahead_location;
+            }
+            else
+            {
                 if (!map_.is_current_point_has_scent(location_.point_))
                 {
                     map_.add_scent_point(location_.point_);
@@ -179,47 +182,47 @@ public:
     }
 
 private:
-    void rotate(Command command)
+    void rotate(Command command, Location& location)
     {
         int is_clockwise = Command::Right == command;
         int offset = (int)Direction::West + 1;
         int shift = is_clockwise ? 1 : offset - 1;
 
-        location_.direction_ = (Direction)(((int)location_.direction_ + shift) % offset);
+        location.direction_ = (Direction)(((int)location.direction_ + shift) % offset);
     }
 
-    void go_foward()
+    void go_foward(Location& location)
     {
-        switch (location_.direction_)
+        switch (location.direction_)
         {
         case Direction::North:
-            location_.point_.y_++;
+            location.point_.y_++;
             break;
         case Direction::East:
-            location_.point_.x_++;
+            location.point_.x_++;
             break;
         case Direction::South:
-            location_.point_.y_--;
+            location.point_.y_--;
             break;
         case Direction::West:
-            location_.point_.x_--;
+            location.point_.x_--;
             break;
         default:
             break;
         }
     }
 
-    bool success_operation(Command command)
+    bool success_operation(Command command, Location& location)
     {
         switch (command)
         {
         case Command::Right:
         case Command::Left:
-            rotate(command);
+            rotate(command, location);
             return true;
         case Command::Forward:
-            go_foward();
-            return map_.is_out_of_bound(location_.point_) ? false : true;
+            go_foward(location);
+            return map_.is_out_of_bound(location.point_) ? false : true;
         default:
             break;
         }
