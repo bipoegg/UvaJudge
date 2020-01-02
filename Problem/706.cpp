@@ -8,9 +8,9 @@
 enum class BorderLayer
 {
     Top = 0,
-    TopCenter,
+    UpMiddle,
     Center,
-    CenterBottom,
+    DownMiddle,
     Bottom
 };
 
@@ -23,45 +23,43 @@ int border_shape[5][10] =
     { 1, 0, 1, 1, 0, 1, 1, 0, 1, 1 }  //   1  |     |   1   |   1
 };
 
+bool is_vertical(BorderLayer layer)
+{
+    return layer == BorderLayer::UpMiddle || layer == BorderLayer::DownMiddle;
+}
+
+std::string get_shape(int index, int boder_length, BorderLayer layer, int number_string_value)
+{
+    std::string shape = " ";
+    if (is_vertical(layer))
+    {
+        if ((index == 0 && number_string_value & 0x2) ||
+            (index == boder_length - 1 && number_string_value & 0x1))
+        {
+            shape = "|";
+        }
+    }
+    else
+    {
+        if ((index > 0 && index < boder_length - 1) &&
+            (number_string_value == 1))
+        {
+            shape = "-";
+        }
+    }
+
+    return shape;
+}
+
 std::string get_string_by_number(int size, int number, BorderLayer layer)
 {
     int string_format = border_shape[(int)layer][number];
     std::string number_string = "";
-    switch (layer)
+    int length = size + 2;
+    for (int i = 0; i < length; i++)
     {
-    case BorderLayer::Top:
-    case BorderLayer::Center:
-    case BorderLayer::Bottom:
-        number_string += " ";
-        for (int i = 0; i < size; i++)
-        {
-            number_string += (string_format == 1) ? "-" : " ";
-        }
-        number_string += " ";
-        break;
-    case BorderLayer::TopCenter:
-    case BorderLayer::CenterBottom:
-        std::string center_string = "";
-        for (int i = 0; i < size; i++)
-        {
-            center_string += " ";
-        }
-
-        if (string_format == 1)
-        {
-            number_string = " " + center_string + "|";
-        }
-        else if (string_format == 2)
-        {
-            number_string = "|" + center_string + " ";
-        }
-        else// (string_format == 3)
-        {
-            number_string = "|" + center_string + "|";
-        }
-        break;
+        number_string += get_shape(i, length, layer, string_format);
     }
-    number_string += " ";
     return number_string;
 }
 
@@ -69,9 +67,14 @@ std::string get_line(int size, std::vector<int>& numbers, BorderLayer layer)
 {
     std::string line = "";
 
-    for (auto number : numbers)
+    for (int i = 0; i < numbers.size(); i++)
     {
+        int number = numbers.at(i);
         line += get_string_by_number(size, number, layer);
+        if (i != numbers.size() - 1)
+        {
+            line += " ";
+        }
     }
 
     return line;
@@ -85,7 +88,7 @@ void generate_number_strings(std::ostream& out, int size, std::vector<int>& numb
         BorderLayer layer = BorderLayer::Top;
         if (i > 0 && i <= size)
         {
-            layer = BorderLayer::TopCenter;
+            layer = BorderLayer::UpMiddle;
         }
         else if (i == size + 1)
         {
@@ -93,7 +96,7 @@ void generate_number_strings(std::ostream& out, int size, std::vector<int>& numb
         }
         else if (i > size + 1 && i <= 2 * size + 1)
         {
-            layer = BorderLayer::CenterBottom;
+            layer = BorderLayer::DownMiddle;
         }
         else if (i == height - 1)
         {
