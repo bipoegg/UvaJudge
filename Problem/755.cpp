@@ -27,10 +27,11 @@ int get_number(char tel)
 	}
 }
 
-Class TelephoneDirectory()
+class TelephoneDirectory()
 {
 public:
-	TelephoneDirectory();
+	TelephoneDirectory() {}
+	virtual ~TelephoneDirectory() {}
 	
 	void add_telephone(const std::string& telephone_text)
 	{
