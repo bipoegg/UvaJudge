@@ -5,11 +5,11 @@
 #include <vector>
 #include <map>
 
-const int AlphaToNumber[] = { 
-			2, 2, 2, 3, 3, 3, 
-			4, 4, 4, 5, 5, 5,
-			6, 6, 6, 7, -1, 7, 7,
-			8, 8, 8, 9, 9, 9, -1 };
+const int AlphaToNumber[] = {
+	2, 2, 2, 3, 3, 3,
+	4, 4, 4, 5, 5, 5,
+	6, 6, 6, 7, -1, 7, 7,
+	8, 8, 8, 9, 9, 9, -1 };
 
 int get_number(char tel)
 {
@@ -22,17 +22,17 @@ int get_number(char tel)
 		return AlphaToNumber[tel - 'A'];
 	}
 	else
-	{ 
+	{
 		return -1;
 	}
 }
 
-class TelephoneDirectory()
+class TelephoneDirectory
 {
 public:
 	TelephoneDirectory() {}
 	virtual ~TelephoneDirectory() {}
-	
+
 	void add_telephone(const std::string& telephone_text)
 	{
 		int telephone_number = 0;
@@ -44,8 +44,8 @@ public:
 				telephone_number = 10 * telephone_number + number;
 			}
 		}
-		
-		if (directory_.find(telephone) == directory_.end())
+
+		if (directory_.find(telephone_number) == directory_.end())
 		{
 			directory_[telephone_number] = 1;
 		}
@@ -54,49 +54,49 @@ public:
 			++directory_[telephone_number];
 		}
 	}
-	
+
 	void output_duplicate(std::ostream& out)
 	{
 		bool has_duplicate_phone = false;
-        for (auto & telephone : directory_)
-        {
-            if (telephone.second > 1)
-            {
-                has_duplicate_phone = true;
-                out << telephone / 1000 << "-" << telephone % 1000 << " " << telephone.second << std::endl;
-            }
-        }
+		for (auto & telephone : directory_)
+		{
+			if (telephone.second > 1)
+			{
+				has_duplicate_phone = true;
+				out << (telephone.first / 1000) << "-" << (telephone.first % 1000) << " " << telephone.second << std::endl;
+			}
+		}
 
-        if (!has_duplicate_phone)
-        {
-            out << "No duplicates." << std::endl;
-        }
+		if (!has_duplicate_phone)
+		{
+			out << "No duplicates." << std::endl;
+		}
 	}
-	
+
 private:
 	std::map<int, int> directory_;
 }
 
 std::istringstream read_line(std::istream& in)
 {
-    std::string line;
-    std::getline(in, line);
-    std::istringstream is(line);
-    return is;
+	std::string line;
+	std::getline(in, line);
+	std::istringstream is(line);
+	return is;
 }
 
 void number_string_generator(std::istream& in, std::ostream& out)
 {
-    try
-    {
+	try
+	{
 		int dataset_count = 0;
 		in >> dataset_count;
-		
+
 		for (int i = 0; i < dataset_count; i++)
 		{
 			TelephoneDirectory tel_directory;
 			int telephone_count = 0;
-            std::istringstream is = read_line(in); // read blank line
+			std::istringstream is = read_line(in); // read blank line
 			is = read_line(in);
 			is >> telephone_count;
 			for (int j = 0; j < telephone_count; j++)
@@ -106,32 +106,32 @@ void number_string_generator(std::istream& in, std::ostream& out)
 				is >> memerable_telephone;
 				tel_directory.add_telephone(memerable_telephone);
 			}
-			
+
 			tel_directory.output_duplicate(out);
 			if (i != dataset_count - 1)
 			{
 				out << std::endl;
 			}
 		}
-		
-    }
-    catch (std::exception& e)
-    {
-        out << e.what();
-    }
+
+	}
+	catch (std::exception& e)
+	{
+		out << e.what();
+	}
 }
 
 
 int main()
 {
-    number_string_generator(std::cin, std::cout);
+	number_string_generator(std::cin, std::cout);
 
-    /*std::ifstream input("input.txt");
-    std::ofstream output("output.txt");
+	/*std::ifstream input("input.txt");
+	std::ofstream output("output.txt");
 
-    number_string_generator(input, output);*/
+	number_string_generator(input, output);*/
 
-    return 0;
+	return 0;
 }
 
 /*
@@ -157,3 +157,4 @@ Sample Output
 888-4567 3
 --- --- --- ---
 */
+
