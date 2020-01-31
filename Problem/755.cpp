@@ -63,7 +63,10 @@ public:
 			if (telephone.second > 1)
 			{
 				has_duplicate_phone = true;
-				out << (telephone.first / 1000) << "-" << (telephone.first % 1000) << " " << telephone.second << std::endl;
+
+				char output_telephone[9];
+				snprintf(output_telephone, 9, "%.3d-%.4d", (telephone.first / 10000), (telephone.first % 10000));
+				out << output_telephone << " " << telephone.second << std::endl;
 			}
 		}
 
@@ -75,35 +78,25 @@ public:
 
 private:
 	std::map<int, int> directory_;
-}
+};
 
-std::istringstream read_line(std::istream& in)
-{
-	std::string line;
-	std::getline(in, line);
-	std::istringstream is(line);
-	return is;
-}
-
-void number_string_generator(std::istream& in, std::ostream& out)
+void telephone_parser(std::istream& in, std::ostream& out)
 {
 	try
 	{
 		int dataset_count = 0;
 		in >> dataset_count;
 
-		for (int i = 0; i < dataset_count; i++)
+		for (int i = 0; i < dataset_count; ++i)
 		{
 			TelephoneDirectory tel_directory;
 			int telephone_count = 0;
-			std::istringstream is = read_line(in); // read blank line
-			is = read_line(in);
-			is >> telephone_count;
-			for (int j = 0; j < telephone_count; j++)
+			in >> telephone_count;
+			for (int j = 0; j < telephone_count; ++j)
 			{
 				std::string memerable_telephone;
-				is = read_line(in);
-				is >> memerable_telephone;
+				
+				in >> memerable_telephone;
 				tel_directory.add_telephone(memerable_telephone);
 			}
 
@@ -124,12 +117,12 @@ void number_string_generator(std::istream& in, std::ostream& out)
 
 int main()
 {
-	number_string_generator(std::cin, std::cout);
+	telephone_parser(std::cin, std::cout);
 
 	/*std::ifstream input("input.txt");
 	std::ofstream output("output.txt");
 
-	number_string_generator(input, output);*/
+	telephone_parser(input, output);*/
 
 	return 0;
 }
@@ -157,4 +150,3 @@ Sample Output
 888-4567 3
 --- --- --- ---
 */
-
