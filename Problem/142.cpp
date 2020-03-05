@@ -1,3 +1,7 @@
+// ConsoleApplication2.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -100,6 +104,11 @@ std::vector<int> get_nearlest_icons(const Point click)
 	std::vector<int> nearlest_icons;
 	for (auto icon : icons_)
 	{
+		if (!icon.is_visible)
+		{
+			continue;
+		}
+
 		int distance = get_distance(icon.position, click);
 		if (distance < min_distance)
 		{
@@ -187,14 +196,12 @@ void check_mouse_click(std::istream& in, std::ostream& out)
 
 int main()
 {
-	//check_mouse_click(std::cin, std::cout);
+	check_mouse_click(std::cin, std::cout);
 
-	std::ifstream input("input.txt");
-	std::ofstream output("output.txt");
+	//std::ifstream input("input.txt");
+	//std::ofstream output("output.txt");
 
-	check_mouse_click(input, output);
-
-	return 0;
+	//check_mouse_click(input, output);
 }
 
 /*
@@ -221,3 +228,4 @@ A
   6  7
 C
 */
+
