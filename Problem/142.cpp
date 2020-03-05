@@ -1,7 +1,3 @@
-// ConsoleApplication2.cpp : Defines the entry point for the console application.
-//
-
-#include "stdafx.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -202,6 +198,7 @@ int main()
 	//std::ofstream output("output.txt");
 
 	//check_mouse_click(input, output);
+	return 0;
 }
 
 /*
