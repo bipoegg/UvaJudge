@@ -36,11 +36,11 @@ struct Node {
 		, first_child_(nullptr)
 		, next_(nullptr)
 		, previous_(nullptr)
-		, depth_ (1)
+		, got_close_symbol(false)
 	{
 
 	}
-	int depth_;
+	bool got_close_symbol;
 	std::string value_;
 	std::shared_ptr<Node> parent_;
 	std::shared_ptr<Node> first_child_;
@@ -55,65 +55,87 @@ public:
 		: case_index_(case_index)
 		, current_node_(nullptr)
 		, root_(nullptr)
-		, depth_(0)
 	{
 	}
 
 	virtual ~DocumentModel() {}
 
+	bool find_node_symbol(const std::string& document, const std::string& symbol)
+	{
+		bool success = false;
+
+		std::size_t symbol_found = document.find(symbol);
+		if (symbol_found != std::string::npos)
+		{
+			success = true;
+		}
+
+		return success;
+	}
+
+	void handle_sibling_node(std::shared_ptr<Node> current_node, std::shared_ptr<Node> new_node)
+	{
+		new_node->parent_ = current_node != nullptr ? current_node_->parent_ : nullptr;
+		new_node->previous_ = current_node_;
+		if (current_node_ != nullptr)
+		{
+			current_node_->next_ = new_node;
+			current_node_->got_close_symbol = true;
+		}
+	}
+
+	bool handle_is_child_node(std::shared_ptr<Node> current_node, std::shared_ptr<Node> new_node)
+	{
+		bool is_child_node = false;
+		if (current_node && !current_node->got_close_symbol)
+		{
+			new_node->parent_ = current_node;
+			if (current_node->first_child_ == nullptr)
+			{
+				current_node->first_child_ = new_node;
+			}
+			is_child_node = true;
+		}
+		return is_child_node;
+	}
+
 	void add_node(const std::string& document)
 	{
-		std::size_t start_found = document.find(START);
-		if (start_found != std::string::npos)
+		// handle start
+		if (find_node_symbol(document, START))
 		{
-			// keep value
 			std::string value = parse_node(document);
-
 			std::shared_ptr<Node> new_node = std::make_shared<Node>(value);
 
-			if (current_node_ && current_node_->depth_ != 0)
+			if (current_node_ == nullptr)
 			{
-				new_node->parent_ = current_node_;
-				if (current_node_->first_child_ == nullptr)
-				{
-					current_node_->first_child_ = new_node;
-				}
+				// keep root only first time
+				root_ = new_node;
 			}
-			else
+
+			if (!handle_is_child_node(current_node_, new_node))
 			{
-				new_node->parent_ = current_node_ != nullptr ? current_node_->parent_ : nullptr;
-				new_node->previous_ = current_node_;
-				if (current_node_ != nullptr)
-				{
-					current_node_->next_ = new_node;
-					current_node_->depth_ = 0;
-				}
-				else
-				{
-					root_ = new_node;
-				}
+				handle_sibling_node(current_node_, new_node);
 			}
 			current_node_ = new_node;
 		}
-		else
+		// handle end
+		else if (find_node_symbol(document, END))
 		{
-			std::size_t end_found = document.find(END);
-			if (end_found != std::string::npos)
+			std::shared_ptr<Node> node = current_node_;
+			// mark first parent which have no end yet
+			while (node->got_close_symbol)
 			{
-				std::shared_ptr<Node> node = current_node_;
-				while (node->depth_ == 0) {
-					node = node->parent_;
-
-					if (node == nullptr)
-					{
-						break;
-					}
-				}
-
-				if (node != nullptr)
+				node = node->parent_;
+				if (node == nullptr)
 				{
-					node->depth_ = 0;
+					break;
 				}
+			}
+
+			if (node != nullptr)
+			{
+				node->got_close_symbol = true;
 			}
 		}
 	}
